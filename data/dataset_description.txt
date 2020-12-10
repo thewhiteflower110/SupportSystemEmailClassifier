@@ -1,0 +1,6 @@
+MDU.zip first 150 emails of MDU category
+MDU(1).zip last 150 emails of MDU category
+Transfer.zip  first 150 emails of Transfers category
+Transfers.zip  first 150 emails of Transfers category
+Retirement.zip  first 150 emails of Retirements category
+Retirements.zip  first 150 emails of Retirements category
