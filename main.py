@@ -23,7 +23,7 @@ dataloaders_dict, dataset_sizes=set_dataloaders(batch_size)
 #model = BertModel.from_pretrained('bert-base-uncased')
 model = bert.BertForSequenceClassification(num_lables)
 model_ft1 = bert.train_model(model, criterion, optimizer_ft, exp_lr_scheduler,num_epochs=10,dataloaders_dict, dataset_sizes)
-torch.save(model.state_dict(), "./models/bert")
+torch.save(model.state_dict(), "./models/bert.bin")
 
 #call lda
 number_topics = 3
@@ -35,9 +35,11 @@ with open('./models/lda.pkl', 'wb') as fp:
 #call lnm
 
 def predict(data,bert=True,lda=True,combined=True):
+    #handle zipfile here
+
     if bert==True:
-        bertmodel = TheModelClass(*args, **kwargs)
-        bertmodel.load_state_dict(torch.load(PATH))
+        bertmodel = bert.BertForSequenceClassification()
+        bertmodel.load_state_dict(torch.load("./models/bert.bin"))
         logits=bert.predict(bertmodel, data)
         print(torch.nn.softmax(logits))
 
@@ -49,7 +51,7 @@ def predict(data,bert=True,lda=True,combined=True):
 
     if combined==True:
         bertmodel = bert.BertForSequenceClassification()
-        bertmodel.load_state_dict(torch.load("./models/bert"))
+        bertmodel.load_state_dict(torch.load("./models/bert.bin"))
         logits=bert.predict(bertmodel, data)
 
         with open('./models/lda.pkl', 'rb') as fp:
@@ -60,3 +62,12 @@ def predict(data,bert=True,lda=True,combined=True):
         model.load_state_dict(torch.load("./model/combined"))
         lnm.predict(model,logits,t2)
 
+    #format the responses
+    reponses_data=[]
+    d1={'filename':"abc", "category": "MDU"}
+    d2={'filename':"def", "category": "Transfer"}
+    reponses_data.append(d1) 
+    reponses_data.append(d2) 
+
+    response = app.response_class(response=flask.json.dumps(reponses_data), status=200, mimetype='application/json')
+    return response
