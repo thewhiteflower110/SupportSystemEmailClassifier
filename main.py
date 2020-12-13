@@ -1,4 +1,5 @@
 #get the data
+'''
 import pandas as pd
 import bert
 import lda
@@ -33,10 +34,10 @@ with open('./models/lda.pkl', 'wb') as fp:
     pickle.dump(lda_model, fp)
 
 #call lnm
-
-def predict(data,bert=True,lda=True,combined=True):
+'''
+def predict(app,data,bert=True,lda=True,combined=True):
     #handle zipfile here
-
+    '''
     if bert==True:
         bertmodel = bert.BertForSequenceClassification()
         bertmodel.load_state_dict(torch.load("./models/bert.bin"))
@@ -61,7 +62,7 @@ def predict(data,bert=True,lda=True,combined=True):
         model=lnm.LNM()
         model.load_state_dict(torch.load("./model/combined"))
         lnm.predict(model,logits,t2)
-
+    '''
     #format the responses
     reponses_data=[]
     d1={'filename':"abc", "category": "MDU"}
