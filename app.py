@@ -9,13 +9,14 @@ import main
 app = Flask(__name__)
 @app.route("/", methods=['POST'])
 def execute():
+        #method = request.form.get('method')
         zipfile = request.form.get('file')
         bert = request.form.get('bert')
         lda = request.form.get('lda')
         combined = request.form.get('combined')
         #main.predict(zipfile,bert=False,lda=False,combined=True) #sample   
-        main.predict(app,zipfile,bert=str_to_bool(bert),lda=str_to_bool(lda),combined=str_to_bool(combined))
-        return method
+        response = main.predict(app,zipfile,bert=str_to_bool(bert),lda=str_to_bool(lda),combined=str_to_bool(combined))
+        return response
 
 def str_to_bool(s):
         if s=='True':
