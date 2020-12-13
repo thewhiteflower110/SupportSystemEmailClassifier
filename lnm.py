@@ -1,31 +1,14 @@
-import torch.nn as nn
-import torch.nn.functional as F
-class LNM():
-    def __init__(self):
-        super().__init__()
+def get_category(logits,t2):
+    l=[]
+    dicti = {0:"MDU",1:"Retirement",2:"Transfer"}
 
-        self.fc1 = nn.Linear(8, 16)
-        self.b1 = nn.BatchNorm1d(16)
-        self.fc2 = nn.Linear(16, 8)
-        self.b2 = nn.BatchNorm1d(8)
-        self.fc3 = nn.Linear(8,4)
-        self.b3 = nn.BatchNorm1d(4)
-        self.fc4 = nn.Linear(4,1)
-
-    def forward(self,x):
-
-        x = swish(self.fc1(x))
-        x = self.b1(x)
-        x = swish(self.fc2(x))
-        x = self.b2(x)
-        x = swish(self.fc3(x))
-        x = self.b3(x)
-        x = F.sigmoid(self.fc4(x))
-
-        return x
-
-from torch.optim import Adam
-
-criterion = nn.MSELoss()
-EPOCHS = 200
-optm = Adam(net.parameters(), lr = 0.001)
+    for bert,lda in logits,t2:
+        x=bert.index(min(bert)) #crossentropy loss is outputted in the tensor
+        y=bert.index(max(lda))
+    
+        #assuming the order of the topics are same in bert and lda
+        if x==y:
+            l.append(dicti[x])
+        else:
+            l.append(dicti[y])
+            
