@@ -18,6 +18,11 @@ def execute():
         response = main.predict(app,zipfile,bert=str_to_bool(bert),lda=str_to_bool(lda),combined=str_to_bool(combined))
         return response
 
+def train():
+        data = request.form.get('data')
+        response = main.train(data)
+        return response
+
 def str_to_bool(s):
         if s=='True':
                 return True
