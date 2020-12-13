@@ -102,7 +102,6 @@ class text_dataset(Dataset):
     def __len__(self):
         return len(self.x_y_list[0])
 
-
 def train_model(model, criterion, optimizer, scheduler, num_epochs=25, dataloaders_dict,dataset_sizes):
     since = time.time()
     print('starting')
@@ -222,8 +221,11 @@ def optim_config():
     return optimizer_ft, criterion, exp_lr_scheduler
 
 def predict(model, text):
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-    zz = tokenizer.tokenize(text)
-    tokens_tensor=torch.tensor([tokenizer.convert_tokens_to_ids(zz)])
-    logits=model(tokens_tensor)
-    return logits
+    all_logits=[]
+    for text in texts:
+        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+        zz = tokenizer.tokenize(text)
+        tokens_tensor=torch.tensor([tokenizer.convert_tokens_to_ids(zz)])
+        logits=model(tokens_tensor).tolist()
+        all_logits.append(logits)
+    return all_logits
