@@ -1,39 +1,3 @@
-
-Skip to content
-Pull requests
-Issues
-Marketplace
-Explore
-@thewhiteflower110
-thewhiteflower110 /
-SupportSystemEmailClassifier
-Private
-
-2
-0
-
-    0
-
-Code
-Issues
-Pull requests
-Actions
-Projects
-Wiki
-Security
-Insights
-
-    Settings
-
-SupportSystemEmailClassifier/app.py /
-@meetgandhi123
-meetgandhi123 Update app.py
-Latest commit 8c97f49 23 minutes ago
-History
-2 contributors
-@thewhiteflower110
-@meetgandhi123
-56 lines (45 sloc) 1.61 KB
 import zipfile
 import io
 import os
@@ -45,10 +9,13 @@ import main
 from flask import Flask, render_template, request
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
+from flask_cors import CORS, cross_origin
 
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = "C:/Users/Dell/Desktop/New folder/SupportSystemEmailClassifier-main/Zip_File"
+app.config['UPLOAD_FOLDER'] = "./Zip_File"
 
 @app.route("/", methods=['POST'])
 def execute():
