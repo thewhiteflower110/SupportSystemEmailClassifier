@@ -1,3 +1,6 @@
+import zipfile
+import io
+import pathlib
 from flask import Flask
 from flask import request
 from flask import json
@@ -11,7 +14,7 @@ def execute():
         lda = request.form.get('lda')
         combined = request.form.get('combined')
         #main.predict(zipfile,bert=False,lda=False,combined=True) #sample   
-        main.predict(zipfile,bert=str_to_bool(bert),lda=str_to_bool(lda),combined=str_to_bool(combined))
+        main.predict(app,zipfile,bert=str_to_bool(bert),lda=str_to_bool(lda),combined=str_to_bool(combined))
         return method
 
 def str_to_bool(s):
