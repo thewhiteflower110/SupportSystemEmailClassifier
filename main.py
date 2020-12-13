@@ -74,3 +74,6 @@ def predict(app,data,bert=True,lda=True,combined=True):
 
     response = app.response_class(response=flask.json.dumps(reponses_data), status=200, mimetype='application/json')
     return response
+
+def train(data):
+    return "SUCCESS"
