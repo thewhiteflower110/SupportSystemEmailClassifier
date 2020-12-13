@@ -1,18 +1,17 @@
 #get the data
 from flask import json
+from zipfile import ZipFile 
 import flask
 import pandas as pd
 import bert
 import lda
 import lnm
 import torch.nn.functional as F
-from zipfile import ZipFile 
+from zipfile import ZipFile
 
 #def predict(app,data,bert=True,lda=True,combined=True):
 def predict(app,data):
-    #handle zipfile here
-    #data (csv)
-    '''
+
     if bert==True:
         bertmodel = bert.BertForSequenceClassification()
         bertmodel.load_state_dict(torch.load("./models/bert.bin"))
@@ -35,7 +34,7 @@ def predict(app,data):
         model=lnm.LNM()
         model.load_state_dict(torch.load("./model/combined"))
         lnm.predict(model,logits,t2)
-    '''
+    
     bertmodel = bert.BertForSequenceClassification()
     bertmodel.load_state_dict(torch.load("./models/bert.bin"))
     logits=bert.predict(bertmodel, data)
