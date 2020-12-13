@@ -36,22 +36,6 @@ def train_model():
         response = main.train(filename,data)
         return response
 
-@app.route("/train", methods=['POST'])
-def train_model():
-        filename= request.form.get('filename')
-        data = request.form.get('data')
-        response = main.train(filename,data)
-        return response
-
-def str_to_bool(s):
-        if s=='True':
-                return True
-        elif s=='False':
-                return False
-        else:
-                return 'valueError'
-
-	
 @app.route('/uploader', methods = ['POST'])
 def upload_file():
 	if request.method == 'POST':
