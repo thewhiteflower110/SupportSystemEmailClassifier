@@ -3,9 +3,7 @@ pandas
 numpy
 torch
 pytorch_pretrained_bert
-shutil
-csv
 extract_msg
 imapclient
 flask
-pickle
+flask_cors
