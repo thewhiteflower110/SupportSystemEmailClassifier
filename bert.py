@@ -210,7 +210,6 @@ def set_dataloaders(batch_size):
     print("device used",device)
     return dataloaders_dict, dataset_sizes
 
-#------------Optimizer Settings--------------------
 def optim_config():
     from torch.optim.lr_scheduler import StepLR
     optim1 = torch.optim.Adam(model.parameters(), lr=0.00001, betas=(0.9, 0.999))#,momentum=.9)
@@ -228,13 +227,3 @@ def predict(model, text):
     tokens_tensor=torch.tensor([tokenizer.convert_tokens_to_ids(zz)])
     logits=model(tokens_tensor)
     return logits
-#------------Config Settings--------------------------
-#config = BertConfig(vocab_size_or_config_json_file=32000, hidden_size=768,
-#        num_hidden_layers=12, num_attention_heads=12, intermediate_size=3072)
-
-#num_labels = 3
-#model = BertModel.from_pretrained('bert-base-uncased')
-#model = BertForSequenceClassification(num_labels)
-#tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-
-#model_ft1 = train_model(model, criterion, optimizer_ft, exp_lr_scheduler,num_epochs=10)
