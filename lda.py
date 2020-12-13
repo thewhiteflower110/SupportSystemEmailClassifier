@@ -34,12 +34,14 @@ def preprocessing(data_words):
     data_words_nostops = remove_stopwords(data_words)
     data_words_bigrams = make_bigrams(data_words_nostops)
     nlp = spacy.load('en', disable=['parser', 'ner'])
+
     def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
         texts_out = []
         for sent in texts:
             doc = nlp(" ".join(sent))
             texts_out.append([token.lemma_ for token in doc if token.pos_ in allowed_postags])
         return texts_out
+    
     data_lemmatized = lemmatization(data_words_bigrams, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV'])
     id2word = corpora.Dictionary(data_lemmatized)
     texts = data_lemmatized
@@ -51,10 +53,9 @@ def model_fit(data_words,num_topics=3):
     lda_model = gensim.models.ldamodel.LdaModel(
         corpus=corpus, id2word=id2word, num_topics=num_topics, random_state=100, 
         update_every=1, chunksize=100, passes=10, alpha='auto', per_word_topics=True)
-    lda_model.save('./lda_train.model')
     return lda_model
 
-def model_predict(lda_model,prints=True,data):
+def model_predict(lda_model,data):
     corpus,id2word,texts = preprocessing(data)
     train_vecs = []
     for i in range(len(texts)):
