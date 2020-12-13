@@ -1,4 +1,6 @@
 #get the data
+from flask import json
+import flask
 '''
 import pandas as pd
 import bert
