@@ -47,7 +47,6 @@ from werkzeug.utils import secure_filename
 from werkzeug.datastructures import  FileStorage
 
 
-
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = "C:/Users/Dell/Desktop/New folder/SupportSystemEmailClassifier-main/Zip_File"
 
@@ -61,6 +60,13 @@ def execute():
         #main.predict(zipfile,bert=False,lda=False,combined=True) #sample   
         #response = main.predict(app,zipfile,bert=str_to_bool(bert),lda=str_to_bool(lda),combined=str_to_bool(combined))
         response = main.predict(app,zipfile)
+        return response
+
+@app.route("/train", methods=['POST'])
+def train_model():
+        filename= request.form.get('filename')
+        data = request.form.get('data')
+        response = main.train(filename,data)
         return response
 
 @app.route("/train", methods=['POST'])
