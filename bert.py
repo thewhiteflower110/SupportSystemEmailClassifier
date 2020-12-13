@@ -1,6 +1,7 @@
 import torch
 from pytorch_pretrained_bert import BertTokenizer, BertModel, BertForMaskedLM
 from pytorch_pretrained_bert import BertConfig
+from torch.utils.data import Dataset, DataLoader
 import torch.nn as nn
 import time
 import copy
@@ -102,7 +103,7 @@ class text_dataset(Dataset):
     def __len__(self):
         return len(self.x_y_list[0])
 
-def train_model(model, criterion, optimizer, scheduler, num_epochs=25, dataloaders_dict,dataset_sizes):
+def train_model(model, criterion, optimizer, scheduler, num_epochs, dataloaders_dict,dataset_sizes):
     since = time.time()
     print('starting')
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -220,7 +221,7 @@ def optim_config():
     exp_lr_scheduler = StepLR(optimizer_ft, step_size=3, gamma=0.1)
     return optimizer_ft, criterion, exp_lr_scheduler
 
-def predict(model, text):
+def predict(model, texts):
     all_logits=[]
     for text in texts:
         tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
