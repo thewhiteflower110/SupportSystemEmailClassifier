@@ -210,9 +210,9 @@ def set_dataloaders(batch_size):
     print("device used",device)
     return dataloaders_dict, dataset_sizes
 
-def optim_config():
+def optim_config(learning_rate):
     from torch.optim.lr_scheduler import StepLR
-    optim1 = torch.optim.Adam(model.parameters(), lr=0.00001, betas=(0.9, 0.999))#,momentum=.9)
+    optim1 = torch.optim.Adam(model.parameters(), lr=learning_rate, betas=(0.9, 0.999))#,momentum=.9)
     # Observe that all parameters are being optimized
     optimizer_ft = optim1
     criterion = torch.nn.CrossEntropyLoss()
