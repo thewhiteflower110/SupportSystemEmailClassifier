@@ -13,6 +13,52 @@ import torch
 import gensim
 
 #def predict(app,data,bert=True,lda=True,combined=True):
+def zip2csv(root_folders,CSV_PATH): #root_folders = [f1,f2]
+    d={'category':[],'subject':[],'content':[]}
+
+    for i in root_folders:
+    l=os.listdir(i)
+    for j in l:
+        f=os.path.join(i,j)
+        if f[-3:]=="msg":
+        msg = extract_msg.Message(f)
+        d['category'].append(i.split('/')[-1])
+        d['subject'].append(msg.subject)
+        d['content'].append(msg.body)
+
+    all_emails=pd.DataFrame(d)
+    d={'filtered_content':[]}
+    
+    for i in all_emails['content']:
+        i=i.split('\r\n')
+        count=0
+        for ij,j in enumerate(i):
+            if 'Subject' in j:
+            count+=1
+            elif 'Re:' in j:
+            i.remove(j)
+            elif 'wrote:' in j:
+            i.remove(j)
+        for z in range(count):
+            for ij,j in enumerate(i):
+            if 'From:' in j:
+                start=ij
+                for ik,k in enumerate(i[ij:]):
+                if 'Subject:' in k:
+                    end=ik+ij
+                    break
+                break
+            del i[start:end+2]
+        if ' ' in i:
+            i.remove(" ")
+        filtered=' '.join(i)
+        #print(filtered.strip())
+        d['filtered_content'].append(filtered.strip())
+
+  df=pd.DataFrame(d)
+  all_emails=all_emails.join(df)
+  all_emails.to_csv(CSV_PATH)
+
 def predict(app,data):
     '''
     if bert==True:
@@ -53,20 +99,21 @@ def predict(app,data):
     reponses_data=[]
     for i in data:
         d={'filename':data['content'][i], "category": data['category'][i]}
-        #d1={'filename':"abc", "category": "MDU"}
-        #d2={'filename':"def", "category": "Transfer"}
-        #reponses_data.append(d1) 
         reponses_data.append(d) 
 
     response = app.response_class(response=flask.json.dumps(reponses_data), status=200, mimetype='application/json')
     return response
 
-def train(filename,data):
+def train(filename,data,learning_rate,num_epochs):
     with ZipFile(filename, 'r') as zip: 
         zip.printdir()     
         zip.extractall("Zip_File/Train/") 
     
-    dataset = pd.read_csv('/content/all_emails.csv')
+    CSV_PATH="./data/all_emails.csv"
+    root_folders=["./Zip_File/Train/"] #add if more folders
+    zip2csv(root_folders,CSV_PATH)
+
+    dataset = pd.read_csv('CSV_PATH)
 
     #extract data
     content_data=dataset['filtered_content']
@@ -76,10 +123,11 @@ def train(filename,data):
     #call bert 
     num_labels=3
     batch_size=16
-    num_epochs=2   
+    #num_epochs=2   
+    #learning_rate=0.00001
     config = BertConfig(vocab_size_or_config_json_file=32000, hidden_size=768,
             num_hidden_layers=12, num_attention_heads=12, intermediate_size=3072)
-    optimizer_ft, criterion, exp_lr_scheduler = optim_config()
+    optimizer_ft, criterion, exp_lr_scheduler = optim_config(learning_rate)
     dataloaders_dict, dataset_sizes=set_dataloaders(batch_size)
     #model = BertModel.from_pretrained('bert-base-uncased')
     model = bert.BertForSequenceClassification(num_lables)
