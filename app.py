@@ -33,7 +33,9 @@ def execute():
 def train_model():
         filename= request.form.get('filename')
         data = request.form.get('data')
-        response = main.train(filename,data)
+        learning_rate = request.form.get('lr')
+        epochs = request.form.get('epochs')
+        response = main.train(filename,data, learning_rate, epochs)
         return response
 
 @app.route('/uploader', methods = ['POST'])
