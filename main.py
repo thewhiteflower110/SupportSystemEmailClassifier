@@ -65,7 +65,7 @@ def train(filename,data):
     with ZipFile(filename, 'r') as zip: 
         zip.printdir()     
         zip.extractall("Zip_File/Train/") 
-
+    
     dataset = pd.read_csv('/content/all_emails.csv')
 
     #extract data
@@ -91,4 +91,4 @@ def train(filename,data):
     number_words = 3
     lda_model=model_fit(number_topics, number_words, subject_data)
     lda_model.save('./models/lda_train.model')
-    return "SUCCESS"
+    return "true"
