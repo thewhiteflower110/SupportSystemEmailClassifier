@@ -46,13 +46,13 @@ class BertForSequenceClassification(nn.Module):
     logits = model(input_ids, token_type_ids, input_mask)
     ```
     """
-    def __init__(self, num_labels=2):#,config):
+    def __init__(self, num_labels=3,config=BertConfig(vocab_size_or_config_json_file=32000)):
         super(BertForSequenceClassification, self).__init__()
-        #self.config=config
+        self.config=config
         self.num_labels = num_labels
         self.bert = BertModel.from_pretrained('bert-base-uncased')
-        self.dropout = nn.Dropout(config.hidden_dropout_prob)
-        self.classifier = nn.Linear(config.hidden_size, num_labels)
+        self.dropout = nn.Dropout(self.config.hidden_dropout_prob)
+        self.classifier = nn.Linear(self.config.hidden_size, num_labels)
         nn.init.xavier_normal_(self.classifier.weight)
 
     def forward(self, input_ids, token_type_ids=None, attention_mask=None, labels=None):
@@ -226,7 +226,22 @@ def predict(model, texts):
     for text in texts:
         tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         zz = tokenizer.tokenize(text)
-        tokens_tensor=torch.tensor([tokenizer.convert_tokens_to_ids(zz)])
-        logits=model(tokens_tensor).tolist()
+        if len(zz)>512:
+            l=[]
+            '''
+            for i in range(len(zz)/512):
+                zz2=zz[512*i:512*(i+1)]
+                if i==int(len(zz)/512)):
+                    zz2=zz[512*i:]
+                tokens_tensor=torch.tensor([tokenizer.convert_tokens_to_ids(zz2)])
+                logits=model(tokens_tensor)#.tolist()
+                l.append(logits)
+            l2=[0,0,0]
+            for j in l:
+                l2[0]+=j[0]
+                l2[1]+=j[1]
+                l2[2]+=j[2]
+            logits=l2
+            '''
         all_logits.append(logits)
     return all_logits
