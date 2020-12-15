@@ -11,20 +11,25 @@ from zipfile import ZipFile
 from pytorch_pretrained_bert import BertConfig
 import torch
 import gensim
+import os
+import extract_msg
 
 #def predict(app,data,bert=True,lda=True,combined=True):
 def zip2csv(root_folders,CSV_PATH): #root_folders = [f1,f2]
+
     d={'category':[],'subject':[],'content':[]}
 
     for i in root_folders:
-    l=os.listdir(i)
-    for j in l:
-        f=os.path.join(i,j)
-        if f[-3:]=="msg":
-        msg = extract_msg.Message(f)
-        d['category'].append(i.split('/')[-1])
-        d['subject'].append(msg.subject)
-        d['content'].append(msg.body)
+        #print(os.getcwd())
+        #i="C:\Users\Juhi Kamdar\Desktop\iitb\SupportSystemEmailClassifier\Zip_File\Predict\Test_Data_-_Eliminations"
+        l=os.listdir(i)
+        for j in l:
+            f=os.path.join(i,j)
+            if f[-3:]=="msg":
+                msg = extract_msg.Message(f)
+                d['category'].append(i.split('/')[-1])
+                d['subject'].append(msg.subject)
+                d['content'].append(msg.body)
 
     all_emails=pd.DataFrame(d)
     d={'filtered_content':[]}
@@ -34,20 +39,20 @@ def zip2csv(root_folders,CSV_PATH): #root_folders = [f1,f2]
         count=0
         for ij,j in enumerate(i):
             if 'Subject' in j:
-            count+=1
+                count+=1
             elif 'Re:' in j:
-            i.remove(j)
+                i.remove(j)
             elif 'wrote:' in j:
-            i.remove(j)
+                i.remove(j)
         for z in range(count):
             for ij,j in enumerate(i):
-            if 'From:' in j:
-                start=ij
-                for ik,k in enumerate(i[ij:]):
-                if 'Subject:' in k:
-                    end=ik+ij
+                if 'From:' in j:
+                    start=ij
+                    for ik,k in enumerate(i[ij:]):
+                        if 'Subject:' in k:
+                            end=ik+ij
+                            break
                     break
-                break
             del i[start:end+2]
         if ' ' in i:
             i.remove(" ")
@@ -55,11 +60,11 @@ def zip2csv(root_folders,CSV_PATH): #root_folders = [f1,f2]
         #print(filtered.strip())
         d['filtered_content'].append(filtered.strip())
 
-  df=pd.DataFrame(d)
-  all_emails=all_emails.join(df)
-  all_emails.to_csv(CSV_PATH)
+    df=pd.DataFrame(d)
+    all_emails=all_emails.join(df)
+    all_emails.to_csv(CSV_PATH)
 
-def predict(app,data):
+def predict(app,zip1):
     '''
     if bert==True:
         bertmodel = bert.BertForSequenceClassification()
@@ -83,13 +88,31 @@ def predict(app,data):
         model=lnm.LNM()
         model.load_state_dict(torch.load("./model/combined"))
         lnm.predict(model,logits,t2)
+    
+    #zip1="C://Users//Juhi Kamdar//Desktop//iitb//SupportSystemEmailClassifier//Zip_File//Test_Data_-_Eliminations.zip"
+    with ZipFile(zip1, 'r') as zip: 
+        print("hi zip")
+        zip.printdir()     
+        zip.extractall("./SupportSystemEmailClassifier/Zip_File/Predict/") 
+ 
+    s="./SupportSystemEmailClassifier/Zip_File/Predict/Test_Data_-_Eliminations/"
+    root_folders=[s]
+    CSV_PATH="./SupportSystemEmailClassifier/predict.csv"
+    zip2csv(root_folders,CSV_PATH)
     '''
-    bertmodel = bert.BertForSequenceClassification()
-    bertmodel.load_state_dict(torch.load("./models/bert.bin"))
-    logits=bert.predict(bertmodel, data['content'])
+    CSV_PATH="./SupportSystemEmailClassifier/emails(1).csv"
+    data=pd.read_csv(CSV_PATH)
+    num_labels=3
+    print("Hi! you entered predict")
+    config = BertConfig(vocab_size_or_config_json_file=32000, hidden_size=768,
+        num_hidden_layers=12, num_attention_heads=12, intermediate_size=3072)
+    bertmodel = bert.BertForSequenceClassification(num_labels,config)
+    bertmodel.load_state_dict(torch.load("./SupportSystemEmailClassifier/models/bert.bin"))
+    logits=bert.predict(bertmodel, data['filtered_content'])
+    print("Hi! bert loaded!")
 
-    lda_model=gensim.models.ldamodel.LdaModel.load("./models/lda_train.model")
-    t2=lda.model_predict(lda_model,data['content'])
+    lda_model=gensim.models.ldamodel.LdaModel.load("./SupportSystemEmailClassifier/models/lda_train.model")
+    t2=lda.model_predict(lda_model,data['filtered_content'])
     l={}
     l['category']=lnm.get_category(logits,t2)
     df=pd.DataFrame(l)
@@ -100,20 +123,21 @@ def predict(app,data):
     for i in data:
         d={'filename':data['content'][i], "category": data['category'][i]}
         reponses_data.append(d) 
-
+    print("respones_data", respones_data)
     response = app.response_class(response=flask.json.dumps(reponses_data), status=200, mimetype='application/json')
+    response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 def train(filename,data,learning_rate,num_epochs):
+    
     with ZipFile(filename, 'r') as zip: 
         zip.printdir()     
         zip.extractall("Zip_File/Train/") 
-    
     CSV_PATH="./data/all_emails.csv"
     root_folders=["./Zip_File/Train/"] #add if more folders
     zip2csv(root_folders,CSV_PATH)
 
-    dataset = pd.read_csv('CSV_PATH)
+    dataset = pd.read_csv('CSV_PATH')
 
     #extract data
     content_data=dataset['filtered_content']
