@@ -6,6 +6,9 @@ __pycache__/
 /model/bert.bin
 # C extensions
 *.so
+/Zip_File/Train
+/Zip_File/Predict
+/Zip_File
 
 # Distribution / packaging
 .Python
