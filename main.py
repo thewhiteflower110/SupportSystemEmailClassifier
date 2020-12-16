@@ -71,30 +71,7 @@ def zip2csv(root_folders, CSV_PATH):  # root_folders = [f1,f2]
 
 
 def predict(app, zip1):
-    '''
-    if bert==True:
-        bertmodel = bert.BertForSequenceClassification()
-        bertmodel.load_state_dict(torch.load("./models/bert.bin"))
-        logits=bert.predict(bertmodel, data)
-        print(torch.nn.softmax(logits))
 
-    if lda==True:
-        #prediction here
-        lda_model=gensim.models.ldamodel.LdaModel.load("./models/lda_train.model")
-        model_predict(lda_model,data)
-
-    if combined==True:
-        bertmodel = bert.BertForSequenceClassification()
-        bertmodel.load_state_dict(torch.load("./models/bert.bin"))
-        logits=bert.predict(bertmodel, data)
-
-        lda_model=gensim.models.ldamodel.LdaModel.load("./models/lda_train.model")
-        t2=model_predict(lda_model,data)
-
-        model=lnm.LNM()
-        model.load_state_dict(torch.load("./model/combined"))
-        lnm.predict(model,logits,t2)
-    '''
     #zip1="C://Users//Juhi Kamdar//Desktop//iitb//SupportSystemEmailClassifier//Zip_File//Test_Data_-_Eliminations.zip"
     print('ZIP1 -------')
     print(zip1)
@@ -113,14 +90,16 @@ def predict(app, zip1):
     print(script_dir)
     data = pd.read_csv(script_dir + '/predict.csv')
     num_labels = 3
-    '''
+
     config = BertConfig(vocab_size_or_config_json_file=32000, hidden_size=768,
-        num_hidden_layers=12, num_attention_heads=12, intermediate_size=3072)
-    bertmodel = bert.BertForSequenceClassification(num_labels,config)
-    bertmodel.load_state_dict(torch.load("./SupportSystemEmailClassifier/models/bert.bin"))
-    logits=bert.predict(bertmodel, data['filtered_content'])
-    print("Hi! bert loaded!")
-    '''
+                        num_hidden_layers=12, num_attention_heads=12, intermediate_size=3072)
+    bertmodel = bert.BertForSequenceClassification(num_labels, config)
+    bertmodel.load_state_dict(torch.load(
+        "./SupportSystemEmailClassifier/models/bert.bin"))
+    print('bert loaded')
+    logits = bert.predict(bertmodel, data['filtered_content'])
+    print("Hi! bert predicted!")
+
     print("Hi! you entered predict")
     lda_model = gensim.models.ldamodel.LdaModel.load(
         "./models/lda_train.model")
@@ -129,6 +108,7 @@ def predict(app, zip1):
     t2 = lda.model_predict(lda_model, data['subject'])
     print("Hi! t2")
     l = {}
+    '''
     logits = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [
         10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
         10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
@@ -140,6 +120,7 @@ def predict(app, zip1):
         10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
         10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
         10, 11, 12], [13, 14, 15], ]
+    '''
     l['category'] = lnm.get_category(logits, t2)
     df = pd.DataFrame(l)
     # print("PREPREPREPREPREPRERPERPDFDFDFDFDFDFDFDFFDFDFDFDFDFFDFDFDFFDFD")
@@ -151,12 +132,12 @@ def predict(app, zip1):
 
     # format the responses
     reponses_data = []
-    print("LENGTHHHHHHHHHHHH!@#$%^&*_!@#$%^&*",len(data[:]))
+    print("LENGTHHHHHHHHHHHH!@#$%^&*_!@#$%^&*", len(data[:]))
     for i in range(len(data[:])):
         # print()
         d = {'filename': data['subject'][i], "category": data['category'][i]}
         reponses_data.append(d)
-    print("respones_data", type(reponses_data),reponses_data)
+    print("respones_data", type(reponses_data), reponses_data)
     response = app.response_class(response=flask.json.dumps(
         reponses_data), status=200, mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')
