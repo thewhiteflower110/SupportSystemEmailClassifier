@@ -126,19 +126,37 @@ def predict(app, zip1):
         "./models/lda_train.model")
     print("Hi! lda_model")
     print(data['filtered_content'])
-    t2 = lda.model_predict(lda_model, data['filtered_content'])
+    t2 = lda.model_predict(lda_model, data['subject'])
     print("Hi! t2")
     l = {}
+    logits = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [
+        10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
+        10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
+        10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
+        10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
+        10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
+        10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
+        10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
+        10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
+        10, 11, 12], [13, 14, 15], [1, 2, 3], [4, 5, 6], [7, 8, 9], [
+        10, 11, 12], [13, 14, 15], ]
     l['category'] = lnm.get_category(logits, t2)
     df = pd.DataFrame(l)
+    # print("PREPREPREPREPREPRERPERPDFDFDFDFDFDFDFDFFDFDFDFDFDFFDFDFDFFDFD")
+    # print(data)
+    data = data.drop(columns='category')
     data = data.join(df)
+    print("DFDFDFDFDFDFDFDFFDFDFDFDFDFFDFDFDFFDFD")
+    print(data)
 
     # format the responses
     reponses_data = []
-    for i in data:
-        d = {'filename': data['content'][i], "category": data['category'][i]}
+    print("LENGTHHHHHHHHHHHH!@#$%^&*_!@#$%^&*",len(data[:]))
+    for i in range(len(data[:])):
+        # print()
+        d = {'filename': data['subject'][i], "category": data['category'][i]}
         reponses_data.append(d)
-    print("respones_data", respones_data)
+    print("respones_data", type(reponses_data),reponses_data)
     response = app.response_class(response=flask.json.dumps(
         reponses_data), status=200, mimetype='application/json')
     response.headers.add('Access-Control-Allow-Origin', '*')

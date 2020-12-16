@@ -61,6 +61,11 @@ def model_fit(data_words, num_topics=3):
 
 
 def model_predict(lda_model, data):
+    New_l = []
+    for i in data:
+        New_l.append(' '.join(i))
+    print("111111111111111111111111111111111111111111111111111111111111111111111111111")
+    print(New_l)
     corpus, id2word, texts = preprocessing(data)
     train_vecs = []
 
